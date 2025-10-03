@@ -53,7 +53,7 @@ templates = Jinja2Templates(directory=os.path.join(root_path,'templates'))
 async def index(request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     lst = retlist()
     delitem = 0
-    if credentials.username == 'epfa' and credentials.password == 'e734432e7':
+    if credentials.username == 'epfa' and credentials.password == '':
         delitem=1
     return templates.TemplateResponse("index.html", {
         "request": request,
@@ -65,7 +65,7 @@ async def index(request: Request, credentials: Annotated[HTTPBasicCredentials, D
 
 @app.get("/rm/{code}/{path}")
 async def rm_file(code: str, path: str):
-    otp_chk = pyotp.TOTP('EBRAHIMARSHAGOOGLE')
+    otp_chk = pyotp.TOTP('EEEEEEEEEEEEEE')
     if otp_chk.now() == code:
         files = glob.glob(f'{abs_path}/{path}')
         for file in files:
@@ -74,7 +74,7 @@ async def rm_file(code: str, path: str):
 
 @app.get("/del/{path:path}")
 async def del_item(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    if credentials.username == 'epfa' and credentials.password == 'e734432e7':
+    if credentials.username == 'epfa' and credentials.password == '':
         os.remove(f'{abs_path}/{path}')
     return RedirectResponse(url="/")
 
@@ -83,7 +83,7 @@ async def del_item(path: str, request: Request, credentials: Annotated[HTTPBasic
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     full_path = os.path.join(abs_path, path)
     delitem = 0
-    if credentials.username == 'epfa' and credentials.password == 'e734432e7':
+    if credentials.username == 'epfa' and credentials.password == '':
         delitem=1
 
     if os.path.isdir(full_path):
