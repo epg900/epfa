@@ -4,9 +4,10 @@
   <head>
       <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="epfa file share">
 
     <link rel="stylesheet" href="/static/bootstrap.min.css">
-      <title>epfa file share</title>
+      <title>epfs file share</title>
 <style>
 	tr {
 	   white-space: nowrap;
@@ -49,15 +50,16 @@
 	{% for b in a %}
     <tr class="{{ varlist[ploop.index - 1] }}" >
 		<td colspan=3 >
-		<img src="/static/{{ varlist[ploop.index - 1] }}.png" width=32px height=32px class="mx-2"  />
 
 		{% if delitem == 1 %}
 		{% if path %}
-		<img src="/static/del.png" width=32px height=32px class="mx-2" style="cursor: pointer;" onclick="if (confirm('Do you really want to remove this file?')) { window.open('/del/{{ path }}/{{ b }}','_self');}"  />
+		<img src="/static/del.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you really want delete?')) { window.open('/del/{{ path }}/{{ b }}','_self'); } ;"  />
 		{% else %}
-		<img src="/static/del.png" width=32px height=32px class="mx-2" style="cursor: pointer;" onclick="if (confirm('Do you really want to remove this file?')) { window.open('/del/{{ b }}','_self');}"  />
+		<img src="/static/del.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you really want delete?')) { window.open('/del/{{ b }}','_self'); } ;"  />
 		{% endif %}
 		{% endif %}
+
+		<img src="/static/{{ varlist[ploop.index - 1] }}.png" width=32px height=32px class="mx-2"  />
 
 
 		{% if path %}
@@ -65,6 +67,7 @@
 		{% else %}
 		<a href="{{ request['website'] }}/{{ b }}" >
 		{% endif %}
+
 		{{ b }}
 		</a>
         </td>
@@ -109,25 +112,21 @@ async function ax(){
 
 
 async function fileupload(){
-
-			var file = document.getElementById("files");
-			var fd = new FormData();
-			var files = file.files;
-			for (var i = 0; i < files.length; i++) {
-			fd.append("file", file.files[i]);
-			}
-
-            let response = await fetch('/uploadfiles', {
-                method: 'POST',
-                body: fd
-                //headers: {"Content-Type": "multipart/form-data"}
-            }).then(response => {
-				window.location.reload();
-			})
-
-            await console.log(response);
-			}
-
+    var file = document.getElementById("files");
+	var fd = new FormData();
+	var files = file.files;
+	for (var i = 0; i < files.length; i++) {
+	fd.append("file", file.files[i]);
+	}
+    let response = await fetch('/uploadfiles', {
+        method: 'POST',
+        body: fd
+        //headers: {"Content-Type": "multipart/form-data"}
+    }).then(response => {
+		window.location.reload();
+	})
+    await console.log(response);
+	}
 
 function viewItem(res,val) {
 const list = document.querySelectorAll(res);
