@@ -1,4 +1,10 @@
-pa website create --domain epfa.pythonanywhere.com -c '/home/epfa/.virtualenvs/my_venv/bin/uvicorn --app-dir /home/epfa/epfs7 --uds $DOMAIN_SOCKET  main:app'
+Get API token
+pip install --upgrade pythonanywhere
+
+pa website create --domain epfa.pythonanywhere.com -c '/home/epfa/.virtualenvs/my_venv/bin/uvicorn --app-dir /home/epfa/epfs7 --uds $DOMAIN_SOCKET  server:app'
+or
+pa website create --domain epfa.pythonanywhere.com --command "/home/epfa/.virtualenvs/my_venv/bin/uvicorn --app-dir /home/epfa/epfs7 --uds /var/sockets/epfa.pythonanywhere.com/app.sock server:app"
+
 pa website create-autorenew-cert --domain epfa
 pa website reload --domain epfa.pythonanywhere.com
 pa website get --domain epfa.pythonanywhere.com
