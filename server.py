@@ -5,10 +5,10 @@ from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import os
 from typing import List, Annotated
+import qrcode
 
-
-root_path = os.getcwd()
-abs_path =  './all_file'
+root_path = '/home/epfa/epfs7'#os.getcwd()
+abs_path =  '/home/epfa/epfs7/all_file'
 upload_path = os.path.join(root_path,'all_file')
 varlist = ['folder','image','audio','video','pdf','file']
 
@@ -53,7 +53,7 @@ templates = Jinja2Templates(directory=os.path.join(root_path,'templates'))
 async def index(request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     lst = retlist()
     delitem = 0
-    if credentials.username == 'epfa' and credentials.password == '':
+    if credentials.username == 'epfa' and credentials.password == 'e734432e7':
         delitem=1
     return templates.TemplateResponse("index.html", {
         "request": request,
@@ -65,7 +65,7 @@ async def index(request: Request, credentials: Annotated[HTTPBasicCredentials, D
 
 @app.get("/rm/{code}/{path}")
 async def rm_file(code: str, path: str):
-    otp_chk = pyotp.TOTP('EEEEEEEEEEEEEE')
+    otp_chk = pyotp.TOTP('EBRAHIMARSHAGOOGLE')
     if otp_chk.now() == code:
         files = glob.glob(f'{abs_path}/{path}')
         for file in files:
@@ -74,16 +74,23 @@ async def rm_file(code: str, path: str):
 
 @app.get("/del/{path:path}")
 async def del_item(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    if credentials.username == 'epfa' and credentials.password == '':
+    if credentials.username == 'epfa' and credentials.password == 'e734432e7':
         os.remove(f'{abs_path}/{path}')
     return RedirectResponse(url="/")
+
+@app.get("/qr/{path:path}")
+def qrcod(path: str):
+    img = qrcode.make(f'{path}')
+    full_path = os.path.join(root_path, 'qr.png')
+    img.save(full_path)
+    return FileResponse(full_path)
 
 
 @app.get("/{path:path}", response_class=HTMLResponse)
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     full_path = os.path.join(abs_path, path)
     delitem = 0
-    if credentials.username == 'epfa' and credentials.password == '':
+    if credentials.username == 'epfa' and credentials.password == 'e734432e7':
         delitem=1
 
     if os.path.isdir(full_path):
