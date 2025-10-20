@@ -80,7 +80,14 @@ async def del_item(path: str, request: Request, credentials: Annotated[HTTPBasic
 
 @app.get("/qr/{path:path}")
 def qrcod(path: str, request: Request):
-    img = qrcode.make(f'{path}')
+    qp = request.query_params
+    txt = path
+    for i ,(k, v) in enumerate(qp.items()):
+        if i==0:
+            txt += f'?{k}={v}'
+        if i>0:
+            txt += f'&{k}={v}'
+    img = qrcode.make(txt)
     full_path = os.path.join(root_path, 'qr.png')
     img.save(full_path)
     return FileResponse(full_path)
