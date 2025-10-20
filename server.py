@@ -79,7 +79,7 @@ async def del_item(path: str, request: Request, credentials: Annotated[HTTPBasic
     return RedirectResponse(url="/")
 
 @app.get("/qr/{path:path}")
-def qrcod(path: str, , request: Request):
+def qrcod(path: str, request: Request):
     img = qrcode.make(f'{path}')
     full_path = os.path.join(root_path, 'qr.png')
     img.save(full_path)
