@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, HTTPException, UploadFile, File, Depends
+from fastapi import FastAPI, Request, HTTPException, UploadFile, File, Depends, Form
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -92,6 +92,28 @@ def qrcod(path: str, request: Request):
     img.save(full_path)
     return FileResponse(full_path)
 
+@app.get("/qr")
+async def qr():
+    return HTMLResponse('''
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <h2>Enter String for Qr code</h2>
+        <form action="/qrres"  method="POST">
+          <label for="txt">Enter your text: </label>
+          <input type="text" id="txt" name="txt" value="" autofocus >
+          <input type="submit" value="Generate Qr Code">
+        </form>
+        </body>
+        </html>
+    ''')
+
+@app.post("/qrres")
+async def qrres(txt: Annotated[str, Form()]):
+    img = qrcode.make(txt)
+    full_path = os.path.join(root_path, 'qr.png')
+    img.save(full_path)
+    return FileResponse(full_path)
 
 @app.get("/{path:path}", response_class=HTMLResponse)
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
