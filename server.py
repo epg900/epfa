@@ -7,7 +7,7 @@ import os
 from typing import List, Annotated
 import qrcode
 
-root_path = '/home/epfa/epfs7'#os.getcwd()
+root_path = os.getcwd()
 abs_path =  '/home/epfa/epfs7/all_file'
 upload_path = os.path.join(root_path,'all_file')
 varlist = ['folder','image','audio','video','pdf','file']
