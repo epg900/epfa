@@ -3,4 +3,5 @@ uvicorn[standard]
 jinja2
 python-multipart
 qrcode
+pyotp
 yt-dlp
