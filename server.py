@@ -53,7 +53,7 @@ templates = Jinja2Templates(directory=os.path.join(root_path,'templates'))
 async def index(request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     lst = retlist()
     delitem = 0
-    if credentials.username == 'epfa' and credentials.password == 'e734432e7':
+    if credentials.username == 'epfa' and credentials.password == '':
         delitem=1
     return templates.TemplateResponse("index.html", {
         "request": request,
