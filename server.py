@@ -8,7 +8,7 @@ from typing import List, Annotated
 import qrcode
 
 root_path = os.getcwd()
-abs_path =  '/home/epfa/epfs7/all_file'
+abs_path =  os.path.join(root_path,'all_file')
 upload_path = os.path.join(root_path,'all_file')
 varlist = ['folder','image','audio','video','pdf','file']
 
@@ -74,7 +74,7 @@ async def rm_file(code: str, path: str):
 
 @app.get("/del/{path:path}")
 async def del_item(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    if credentials.username == 'epfa' and credentials.password == 'e734432e7':
+    if credentials.username == 'epfa' and credentials.password == '':
         os.remove(f'{abs_path}/{path}')
     return RedirectResponse(url="/")
 
@@ -132,7 +132,7 @@ def yt(path: str, request: Request):
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     full_path = os.path.join(abs_path, path)
     delitem = 0
-    if credentials.username == 'epfa' and credentials.password == 'e734432e7':
+    if credentials.username == 'epfa' and credentials.password == '':
         delitem=1
 
     if os.path.isdir(full_path):
