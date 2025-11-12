@@ -15,16 +15,23 @@ password = ''
 
 security = HTTPBasic()
 
-def retlist(path=""):
+def retlist(path="",sh=False):
     all_list = []
     for i in range(0,7):
         all_list.append([])
-    new_path = os.path.join(abs_path,path)
-    files = os.listdir(os.path.join(abs_path,path))
+    new_path = os.path.join(abs_path,path)    
+    files0 = os.listdir(os.path.join(abs_path,path))
+    files=[]
+    for ff in files0:
+        if sh==False:
+            if not ff.startswith('.'):
+                files.append(ff)
+        else:
+            files.append(ff)
     files.sort()
     for f in files:
-        if os.path.isdir(os.path.join(new_path,f)):
-            all_list[0].append(f)
+        if os.path.isdir(os.path.join(new_path,f)):                 
+            all_list[0].append(f)            
         if os.path.isfile(os.path.join(new_path,f)):
             filetype = os.path.splitext(os.path.join(new_path,f))
             if  [x for x in ['jpg','png','bmp','jpeg','gif'] if x in filetype[1]]:
@@ -52,10 +59,13 @@ templates = Jinja2Templates(directory=os.path.join(root_path,'templates'))
 
 @app.get("/")
 async def index(request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    lst = retlist()
     delitem = 0
     if credentials.username == 'epfa' and credentials.password == password:
         delitem=1
+    if delitem==1:
+            lst = retlist(sh=True)
+    else:
+            lst = retlist()
     return templates.TemplateResponse("index.html", {
         "request": request,
         "path": "",
@@ -64,6 +74,9 @@ async def index(request: Request, credentials: Annotated[HTTPBasicCredentials, D
         "delitem": delitem
     })
 
+# Uncomment if you need this functionality
+'''
+import pyotp, glob
 @app.get("/rm/{code}/{path}")
 async def rm_file(code: str, path: str):
     otp_chk = pyotp.TOTP('EBRAHIMARSHAGOOGLE')
@@ -72,11 +85,24 @@ async def rm_file(code: str, path: str):
         for file in files:
             os.remove(file)
     return RedirectResponse(url="/")
+'''
 
 @app.get("/del/{path:path}")
 async def del_item(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     if credentials.username == 'epfa' and credentials.password == password:
         os.remove(f'{abs_path}/{path}')
+    return RedirectResponse(url="/")
+
+@app.get("/nosh/{path:path}")
+async def nosh_item(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    if credentials.username == 'epfa' and credentials.password == password:
+        split_text =  path.split('/')
+        if split_text[-1][0]!='.':
+            split_text[-1] = '.' + split_text[-1]
+        else:
+            split_text[-1] =  split_text[-1][1:]
+        st = '/'.join(split_text)
+        os.rename(f'{abs_path}/{path}',f'{abs_path}/{st}')        
     return RedirectResponse(url="/")
 
 @app.get("/qr/{path:path}")
@@ -134,10 +160,13 @@ async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBa
     full_path = os.path.join(abs_path, path)
     delitem = 0
     if credentials.username == 'epfa' and credentials.password == password:
-        delitem=1
-
+        delitem=1    
     if os.path.isdir(full_path):
-        lst = retlist(path)
+        if delitem==1:
+            lst = retlist(path,True)
+        else:
+            lst = retlist(path)
+        
         return templates.TemplateResponse("index.html", {
             "request": request,
             "path": path,
@@ -152,18 +181,17 @@ async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBa
             raise HTTPException(status_code=404, detail="File not found")
 
 
-# Uncomment if you need this functionality
-import pyotp, glob
+
 
 @app.post("/uploadfiles")
-async def upload_image(file: List[UploadFile] = File(...)):
+async def upload_file(file: List[UploadFile] = File(...)):
     for fi in file:
-        file_path = os.path.join(abs_path, fi.filename)
+        file_path = os.path.join(abs_path , fi.filename)
         with open(file_path, "wb") as f:
             f.write(await fi.read())
     return RedirectResponse(url="/", status_code=303)
 
-#import uvicorn
-#if __name__ == "__main__":
-#    uvicorn.run(app, host="0.0.0.0", port=8000)
+import uvicorn
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 

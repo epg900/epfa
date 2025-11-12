@@ -49,13 +49,18 @@
 	{% set ploop = loop %}
 	{% for b in a %}
     <tr class="{{ varlist[ploop.index - 1] }}" >
-		<td colspan=3 >
+		<td colspan=4 >
 
 		{% if delitem == 1 %}
 		{% if path %}
 		<img src="/static/del.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you really want delete?')) { window.open('/del/{{ path }}/{{ b }}','_self'); } ;"  />
 		{% else %}
 		<img src="/static/del.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you really want delete?')) { window.open('/del/{{ b }}','_self'); } ;"  />
+		{% endif %}
+		{% if path %}
+		<img src="/static/nosh.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ path }}/{{ b }}','_self'); } ;"  />
+		{% else %}
+		<img src="/static/nosh.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ b }}','_self'); } ;"  />
 		{% endif %}
 		{% endif %}
 
@@ -86,7 +91,7 @@ async function ax(){
     var file = document.getElementById("files");
     let request = new XMLHttpRequest();
     request.open("post",'/uploadfiles', true);
-    //request.setRequestHeader("Content-Type", "multipart/form-data");
+    //request.setRequestHeader("Content-Type", "multipart/form-data");	
     var fd = new FormData();
 	var files = file.files;
 	for (var i = 0; i < files.length; i++) {
@@ -118,7 +123,7 @@ async function fileupload(){
 	for (var i = 0; i < files.length; i++) {
 	fd.append("file", file.files[i]);
 	}
-    let response = await fetch('/uploadfiles', {
+    let response = await fetch('/uploadfiles/', {
         method: 'POST',
         body: fd
         //headers: {"Content-Type": "multipart/form-data"}
