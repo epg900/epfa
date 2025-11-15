@@ -90,8 +90,11 @@ async def rm_file(code: str, path: str):
 @app.get("/del/{path:path}")
 async def del_item(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     if credentials.username == 'epfa' and credentials.password == password:
+        split_text =  path.split('/')
+        split_text[-1] = ""
+        st2 = '/'.join(split_text)
         os.remove(f'{abs_path}/{path}')
-    return RedirectResponse(url="/")
+    return RedirectResponse(url=f"/{st2}")
 
 @app.get("/nosh/{path:path}")
 async def nosh_item(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
