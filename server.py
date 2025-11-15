@@ -177,6 +177,7 @@ async def upload_file(file: List[UploadFile] = File(...)):
 
 @app.get("/{path:path}", response_class=HTMLResponse)
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    path=path.rstrip('/')
     full_path = os.path.join(abs_path, path)
     delitem = 0
     if credentials.username == 'epfa' and credentials.password == password:
