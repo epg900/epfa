@@ -191,7 +191,7 @@ async def upload_file(file: List[UploadFile] = File(...)):
             f.write(await fi.read())
     return RedirectResponse(url="/")
 
-import uvicorn
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+#import uvicorn
+#if __name__ == "__main__":
+#    uvicorn.run(app, host="0.0.0.0", port=8000)
 
