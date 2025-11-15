@@ -103,7 +103,7 @@ async def nosh_item(path: str, request: Request, credentials: Annotated[HTTPBasi
             split_text[-1] =  split_text[-1][1:]
         st = '/'.join(split_text)
         os.rename(f'{abs_path}/{path}',f'{abs_path}/{st}')        
-    return RedirectResponse(url="/")
+    return RedirectResponse(url="/{path}")
 
 @app.get("/qr/{path:path}")
 def qrcod(path: str, request: Request):
@@ -142,6 +142,31 @@ async def qrres(txt: Annotated[str, Form()]):
     img.save(full_path)
     return FileResponse(full_path)
 
+@app.get("/mkdir/{path:path}")
+def mkdir(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    if credentials.username == 'epfa' and credentials.password == password:
+        os.mkdir(f"{abs_path}/{path}")
+    return RedirectResponse(url=f"/{path}")
+
+@app.post("/uploadfiles/{path:path}")
+async def upload_file_path(path: str, file: List[UploadFile] = File(...)):
+    for fi in file:
+        file_path0 = os.path.join(abs_path , path)
+        file_path = os.path.join(file_path0 , fi.filename)
+        with open(file_path, "wb") as f:
+            f.write(await fi.read())
+    return RedirectResponse(url=f"/{path}")
+
+
+@app.post("/uploadfiles")
+async def upload_file(file: List[UploadFile] = File(...)):
+    for fi in file:
+        file_path = os.path.join(abs_path , fi.filename)
+        with open(file_path, "wb") as f:
+            f.write(await fi.read())
+    return RedirectResponse(url="/")
+
+
 @app.get("/{path:path}", response_class=HTMLResponse)
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     full_path = os.path.join(abs_path, path)
@@ -167,29 +192,6 @@ async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBa
         else:
             raise HTTPException(status_code=404, detail="File not found")
 
-@app.get("/mkdir/{path:path}")
-def mkdir(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    if credentials.username == 'epfa' and credentials.password == password:
-        os.mkdir(f"{abs_path}/{path}")
-    return RedirectResponse(url=f"/{path}")
-
-@app.post("/uploadfiles/{path:path}")
-async def upload_file_path(path: str, file: List[UploadFile] = File(...)):
-    for fi in file:
-        file_path0 = os.path.join(abs_path , path)
-        file_path = os.path.join(file_path0 , fi.filename)
-        with open(file_path, "wb") as f:
-            f.write(await fi.read())
-    return RedirectResponse(url=f"/{path}")
-
-
-@app.post("/uploadfiles")
-async def upload_file(file: List[UploadFile] = File(...)):
-    for fi in file:
-        file_path = os.path.join(abs_path , fi.filename)
-        with open(file_path, "wb") as f:
-            f.write(await fi.read())
-    return RedirectResponse(url="/")
 
 #import uvicorn
 #if __name__ == "__main__":
