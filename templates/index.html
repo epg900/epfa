@@ -45,6 +45,16 @@
     </div>
 	</td>
     </tr>
+    {% if path %}
+    <tr class="{{ varlist[0] }}" >
+    <td colspan=4>
+    <img src="/static/up2.png" width=32px height=32px class="mx-2" role='button' onclick=""  />
+    <img src="/static/up2.png" width=32px height=32px class="mx-2" role='button' onclick=""  />
+    <img src="/static/up.png" width=32px height=32px class="mx-2"  />
+		<a href="{{ request['website'] }}/{{ path }}/.." > .. </a>
+    </td>
+	</tr>
+	{% endif %}
 	{% for a in all_list %}
 	{% set ploop = loop %}
 	{% for b in a %}
