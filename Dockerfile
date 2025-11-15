@@ -1,13 +1,11 @@
-FROM python:3.9
+FROM python:3.10
 
-RUN useradd -m -u 1000 user
-USER user
-ENV PATH="/home/user/.local/bin:$PATH"
-
-WORKDIR /app
-
-COPY --chown=user ./requirements.txt requirements.txt
+WORKDIR /epfa
+ 
+COPY  . .
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-COPY --chown=user . /app
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+
+EXPOSE 80
+
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "80"]

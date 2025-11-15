@@ -93,7 +93,10 @@ async def del_item(path: str, request: Request, credentials: Annotated[HTTPBasic
         split_text =  path.split('/')
         split_text[-1] = ""
         st2 = '/'.join(split_text)
-        os.remove(f'{abs_path}/{path}')
+        if os.path.isdir(f'{abs_path}/{path}'):
+            os.system(f'rm -r {abs_path}/{path}')
+        else:
+            os.remove(f'{abs_path}/{path}')
     return RedirectResponse(url=f"/{st2}")
 
 @app.get("/nosh/{path:path}")
