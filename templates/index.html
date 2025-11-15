@@ -58,9 +58,9 @@
 		<img src="/static/del.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you really want delete?')) { window.open('/del/{{ b }}','_self'); } ;"  />
 		{% endif %}
 		{% if path %}
-		<img src="/static/nosh.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ path }}/{{ b }}','_self'); } ;"  />
+		<img src="/static/nosh.png" width=32px height=32px {% if b.0=='.' %} style='filter: grayscale(100%);' {% endif %} class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ path }}/{{ b }}','_self'); } ;"  />
 		{% else %}
-		<img src="/static/nosh.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ b }}','_self'); } ;"  />
+		<img src="/static/nosh.png" width=32px height=32px {% if b.0=='.' %} style='filter: grayscale(100%);' {% endif %} class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ b }}','_self'); } ;"  />
 		{% endif %}
 		{% endif %}
 
@@ -90,7 +90,13 @@ async function ax(){
     //e.preventDefault();
     var file = document.getElementById("files");
     let request = new XMLHttpRequest();
-    request.open("post",'/uploadfiles', true);
+	post_path="/uploadfiles";
+	path="/uploadfiles";
+	{% if path %} 
+		path+="/";
+		path+="{{ path }}";
+	{% endif %}				
+    request.open("post",path, true);
     //request.setRequestHeader("Content-Type", "multipart/form-data");	
     var fd = new FormData();
 	var files = file.files;

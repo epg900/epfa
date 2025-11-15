@@ -11,7 +11,7 @@ root_path = os.getcwd()
 abs_path =  os.path.join(root_path,'all_file')
 upload_path = os.path.join(root_path,'all_file')
 varlist = ['folder','image','audio','video','pdf','file']
-password = ''
+password = '123'
 
 security = HTTPBasic()
 
@@ -142,19 +142,6 @@ async def qrres(txt: Annotated[str, Form()]):
     img.save(full_path)
     return FileResponse(full_path)
 
-@app.get("/yt/{path:path}")
-def yt(path: str, request: Request):
-    qp = request.query_params
-    txt = path
-    for i ,(k, v) in enumerate(qp.items()):
-        if i==0:
-            txt += f'?{k}={v}'
-        if i>0:
-            txt += f'&{k}={v}'
-    os.system(f'yt-dlp -f 18 -o {root_path}/video.mp4 {txt}')    
-    return FileResponse('/home/epfa/epfs7/video.mp4')
-
-
 @app.get("/{path:path}", response_class=HTMLResponse)
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     full_path = os.path.join(abs_path, path)
@@ -180,7 +167,20 @@ async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBa
         else:
             raise HTTPException(status_code=404, detail="File not found")
 
+@app.get("/mkdir/{path:path}")
+def mkdir(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    if credentials.username == 'epfa' and credentials.password == password:
+        os.mkdir(f"{abs_path}/{path}")
+    return RedirectResponse(url=f"/{path}")
 
+@app.post("/uploadfiles/{path:path}")
+async def upload_file_path(path: str, file: List[UploadFile] = File(...)):
+    for fi in file:
+        file_path0 = os.path.join(abs_path , path)
+        file_path = os.path.join(file_path0 , fi.filename)
+        with open(file_path, "wb") as f:
+            f.write(await fi.read())
+    return RedirectResponse(url=f"/{path}")
 
 
 @app.post("/uploadfiles")
@@ -189,7 +189,7 @@ async def upload_file(file: List[UploadFile] = File(...)):
         file_path = os.path.join(abs_path , fi.filename)
         with open(file_path, "wb") as f:
             f.write(await fi.read())
-    return RedirectResponse(url="/", status_code=303)
+    return RedirectResponse(url="/")
 
 import uvicorn
 if __name__ == "__main__":
