@@ -102,10 +102,10 @@ async def nosh_item(path: str, request: Request, credentials: Annotated[HTTPBasi
         else:
             split_text[-1] =  split_text[-1][1:]        
         st = '/'.join(split_text)
-        split_text[-1]=""
+        split_text[-1] = ""
         st2 = '/'.join(split_text)
         os.rename(f'{abs_path}/{path}',f'{abs_path}/{st}')        
-    return RedirectResponse(url=f"/st2")
+    return RedirectResponse(url=f"/{st2}")
 
 @app.get("/qr/{path:path}")
 def qrcod(path: str, request: Request):
