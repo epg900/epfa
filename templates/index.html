@@ -19,18 +19,20 @@
 <table class="table table-striped table-hover">
 <tbody>
     <tr>
-		<form id="upload_file2" name="upload_file2" action = "/uploadfiles" method = "POST" enctype = "multipart/form-data" >
+		<form id="upload_file2" name="upload_file2" action = "/uploadfiles" method = "POST" enctype = "multipart/form-data" >		
         <td>
             <input class="form-control"  type="file" name="files" id="files" multiple />
         </td>
         <td>
             <input class="btn btn-success" type = "button"  onclick="ax();" value="Upload File" />
-        </td>
+        </td>		
 		</form>
     </tr>
 
-	<tr>
-		<td  colspan=3>
+	<tr>            
+		<td  colspan=4>
+		<img src="/static/qr.png" title="Generate QR Code..." width=32px height=32px class="mx-2" role='button' onclick="qr();"  />    
+        <img src="/static/addfolder.png" title="Create New Folder..."  width=32px height=32px class="mx-2" role='button' onclick="mkdir();"  />	
 		{% for i in varlist %}
 		<input id="ch1" class="form-check-input"  type='checkbox' onchange='viewItem(".{{ i }}",this.checked);' checked>
 		<label  class="form-check-label" for="ch1">{{ i }}</label>
@@ -45,13 +47,14 @@
     </div>
 	</td>
     </tr>
+	
     {% if path %}
-    <tr class="{{ varlist[0] }}" >
+    <tr>
     <td colspan=4>
-    <img src="/static/up2.png" width=32px height=32px class="mx-2" role='button' onclick=""  />
-    <img src="/static/up2.png" width=32px height=32px class="mx-2" role='button' onclick=""  />
-    <img src="/static/up.png" width=32px height=32px class="mx-2"  />
-		<a href="{{ request['website'] }}/{{ path }}/.." > .. </a>
+    <img src="/static/up3.png" width=32px height=32px class="mx-2" role='button'   />
+    <img src="/static/up3.png" width=32px height=32px class="mx-2" role='button'   />
+    <img src="/static/up.png" width=32px height=32px class="mx-2" role='button' onclick="window.open('/{{ path }}/..','_self');" />
+	<a href="{{ request['website'] }}/{{ path }}/.." > .. </a>
     </td>
 	</tr>
 	{% endif %}
@@ -60,29 +63,24 @@
 	{% for b in a %}
     <tr class="{{ varlist[ploop.index - 1] }}" >
 		<td colspan=4 >
-
 		{% if delitem == 1 %}
 		{% if path %}
-		<img src="/static/del.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you really want delete?')) { window.open('/del/{{ path }}/{{ b }}','_self'); } ;"  />
+		<img src="/static/del.png" title="Delete..."  width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you really want delete?')) { window.open('/del/{{ path }}/{{ b }}','_self'); } ;"  />
 		{% else %}
-		<img src="/static/del.png" width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you really want delete?')) { window.open('/del/{{ b }}','_self'); } ;"  />
+		<img src="/static/del.png" title="Delete..."  width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you really want delete?')) { window.open('/del/{{ b }}','_self'); } ;"  />
 		{% endif %}
 		{% if path %}
-		<img src="/static/nosh.png" width=32px height=32px {% if b.0=='.' %} style='filter: grayscale(100%);' {% endif %} class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ path }}/{{ b }}','_self'); } ;"  />
+		<img src="/static/nosh.png" title="Show/Hide..."  width=32px height=32px {% if b.0=='.' %} style='filter: grayscale(100%);' {% endif %} class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ path }}/{{ b }}','_self'); } ;"  />
 		{% else %}
-		<img src="/static/nosh.png" width=32px height=32px {% if b.0=='.' %} style='filter: grayscale(100%);' {% endif %} class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ b }}','_self'); } ;"  />
+		<img src="/static/nosh.png" title="Show/Hide..."  width=32px height=32px {% if b.0=='.' %} style='filter: grayscale(100%);' {% endif %} class="mx-2" role='button' onclick="if (confirm('Are you sure?')) { window.open('/nosh/{{ b }}','_self'); } ;"  />
 		{% endif %}
 		{% endif %}
-
 		<img src="/static/{{ varlist[ploop.index - 1] }}.png" width=32px height=32px class="mx-2"  />
-
-
 		{% if path %}
 		<a href="{{ request['website'] }}/{{ path }}/{{ b }}" >
 		{% else %}
 		<a href="{{ request['website'] }}/{{ b }}" >
 		{% endif %}
-
 		{{ b }}
 		</a>
         </td>
@@ -96,7 +94,6 @@
 <script  type="text/javascript" >
 
 async function ax(){
-
     //e.preventDefault();
     var file = document.getElementById("files");
     let request = new XMLHttpRequest();
@@ -153,8 +150,27 @@ function viewItem(res,val) {
 const list = document.querySelectorAll(res);
 for (const item of list) {
   item.hidden = !val
+ }
 }
+
+function qr() {
+  let newf = prompt("Please enter your text", "default");  
+  if (newf != null) {
+	window.open('/qr/' + newf,'_self');	
+  }
 }
+
+function mkdir() {
+  let newf = prompt("Please enter folder name", "NewFolder");  
+  if (newf != null) {
+	{% if path %}
+    window.open('/mkdir/{{path}}/' + newf,'_self');
+	{% else %}
+	window.open('/mkdir/' + newf,'_self');
+	{% endif %}	
+  }
+}
+
 </script>
 <!--</div>-->
 </body>
