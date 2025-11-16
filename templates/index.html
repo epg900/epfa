@@ -31,8 +31,10 @@
 
 	<tr>            
 		<td  colspan=4>
-		<img src="/static/qr.png" title="Generate QR Code..." width=32px height=32px class="mx-2" role='button' onclick="qr();"  />    
+		<img src="/static/qr.png" title="Generate QR Code..." width=32px height=32px class="mx-2" role='button' onclick="qr();"  />  
+		{% if delitem == 1 %}		
         <img src="/static/addfolder.png" title="Create New Folder..."  width=32px height=32px class="mx-2" role='button' onclick="mkdir();"  />	
+		{% endif %}
 		{% for i in varlist %}
 		<input id="ch1" class="form-check-input"  type='checkbox' onchange='viewItem(".{{ i }}",this.checked);' checked>
 		<label  class="form-check-label" for="ch1">{{ i }}</label>
