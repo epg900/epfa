@@ -59,10 +59,10 @@ templates = Jinja2Templates(directory=os.path.join(root_path,'templates'))
 
 @app.get("/")
 async def index(request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    delitem = 0
+    delitem = False
     if credentials.username == 'epfa' and credentials.password == password:
-        delitem=1
-    if delitem==1:
+        delitem = True
+    if delitem == True:
             lst = retlist(sh=True)
     else:
             lst = retlist()
@@ -184,14 +184,11 @@ async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBa
     for sp in split_path:
         if sp[0]=='.':
             premission = False
-    delitem = 0
+    delitem = False
     if credentials.username == 'epfa' and credentials.password == password :
-        delitem=1
+        delitem = True
     if os.path.isdir(full_path):
-        if delitem==1:
-            lst = retlist(path,True)
-        else:
-            lst = retlist(path)
+        lst = retlist(path,delitem)
 
         return templates.TemplateResponse("index.html", {
             "request": request,
@@ -202,15 +199,13 @@ async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBa
         })
     else:
         if os.path.exists(full_path):
-            if delitem==1 :
+            if delitem == True :
                 return FileResponse(full_path)
-            elif delitem==0:
+            else:
                 if premission == True:
                     return FileResponse(full_path)
                 else:
                     raise HTTPException(status_code=404, detail="File not found")
-            else:
-                raise HTTPException(status_code=404, detail="File not found")
         else:
             raise HTTPException(status_code=404, detail="File not found")
 
