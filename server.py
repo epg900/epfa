@@ -179,15 +179,20 @@ async def upload_file(file: List[UploadFile] = File(...)):
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     path=path.rstrip('/')
     full_path = os.path.join(abs_path, path)
+    split_path=path.split('/')
+    premission = True
+    for sp in split_path:
+        if sp[0]=='.':
+            premission = False
     delitem = 0
-    if credentials.username == 'epfa' and credentials.password == password:
-        delitem=1    
+    if credentials.username == 'epfa' and credentials.password == password :
+        delitem=1
     if os.path.isdir(full_path):
         if delitem==1:
             lst = retlist(path,True)
         else:
             lst = retlist(path)
-        
+
         return templates.TemplateResponse("index.html", {
             "request": request,
             "path": path,
@@ -197,7 +202,15 @@ async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBa
         })
     else:
         if os.path.exists(full_path):
-            return FileResponse(full_path)
+            if delitem==1 :
+                return FileResponse(full_path)
+            elif delitem==0:
+                if premission == True:
+                    return FileResponse(full_path)
+                else:
+                    raise HTTPException(status_code=404, detail="File not found")
+            else:
+                raise HTTPException(status_code=404, detail="File not found")
         else:
             raise HTTPException(status_code=404, detail="File not found")
 
