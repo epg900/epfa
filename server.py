@@ -19,7 +19,7 @@ def retlist(path="",sh=False):
     all_list = []
     for i in range(0,7):
         all_list.append([])
-    new_path = os.path.join(abs_path,path)    
+    new_path = os.path.join(abs_path,path)
     files0 = os.listdir(os.path.join(abs_path,path))
     files=[]
     for ff in files0:
@@ -30,8 +30,8 @@ def retlist(path="",sh=False):
             files.append(ff)
     files.sort()
     for f in files:
-        if os.path.isdir(os.path.join(new_path,f)):                 
-            all_list[0].append(f)            
+        if os.path.isdir(os.path.join(new_path,f)):
+            all_list[0].append(f)
         if os.path.isfile(os.path.join(new_path,f)):
             filetype = os.path.splitext(os.path.join(new_path,f))
             if  [x for x in ['jpg','png','bmp','jpeg','gif'] if x in filetype[1]]:
@@ -59,10 +59,10 @@ templates = Jinja2Templates(directory=os.path.join(root_path,'templates'))
 
 @app.get("/")
 async def index(request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    delitem = False
+    delitem = 0
     if credentials.username == 'epfa' and credentials.password == password:
-        delitem = True
-    if delitem == True:
+        delitem=1
+    if delitem==1:
             lst = retlist(sh=True)
     else:
             lst = retlist()
@@ -106,11 +106,11 @@ async def nosh_item(path: str, request: Request, credentials: Annotated[HTTPBasi
         if split_text[-1][0]!='.':
             split_text[-1] = '.' + split_text[-1]
         else:
-            split_text[-1] =  split_text[-1][1:]        
+            split_text[-1] =  split_text[-1][1:]
         st = '/'.join(split_text)
         split_text[-1] = ""
         st2 = '/'.join(split_text)
-        os.rename(f'{abs_path}/{path}',f'{abs_path}/{st}')        
+        os.rename(f'{abs_path}/{path}',f'{abs_path}/{st}')
     return RedirectResponse(url=f"/{st2}")
 
 @app.get("/qr/{path:path}")
@@ -175,6 +175,38 @@ async def upload_file(file: List[UploadFile] = File(...)):
     return RedirectResponse(url="/")
 
 
+import shutil
+@app.get("/download_dir/{path:path}", response_class=HTMLResponse)
+async def dir_zip(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    path=path.rstrip('/')
+    full_path = os.path.join(abs_path, path)
+    split_path=path.split('/')
+    premission = True
+    for sp in split_path:
+        if sp[0]=='.':
+            premission = False
+    delitem = 0
+    if credentials.username == 'epfa' and credentials.password == password :
+        delitem=1
+    if os.path.isdir(full_path):
+        if os.path.exists(full_path):
+            if delitem==1 :
+                shutil.make_archive('download', 'zip', full_path)
+                return FileResponse('download.zip')
+            elif delitem==0:
+                if premission == True:
+                    shutil.make_archive('download', 'zip', full_path)
+                    return FileResponse('download.zip')
+                else:
+                    raise HTTPException(status_code=404, detail="File not found")
+            else:
+                raise HTTPException(status_code=404, detail="File not found")
+        else:
+            raise HTTPException(status_code=404, detail="File not found")
+
+
+
+
 @app.get("/{path:path}", response_class=HTMLResponse)
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     path=path.rstrip('/')
@@ -184,11 +216,14 @@ async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBa
     for sp in split_path:
         if sp[0]=='.':
             premission = False
-    delitem = False
+    delitem = 0
     if credentials.username == 'epfa' and credentials.password == password :
-        delitem = True
+        delitem=1
     if os.path.isdir(full_path):
-        lst = retlist(path,delitem)
+        if delitem==1:
+            lst = retlist(path,True)
+        else:
+            lst = retlist(path)
 
         return templates.TemplateResponse("index.html", {
             "request": request,
@@ -199,13 +234,15 @@ async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBa
         })
     else:
         if os.path.exists(full_path):
-            if delitem == True :
+            if delitem==1 :
                 return FileResponse(full_path)
-            else:
+            elif delitem==0:
                 if premission == True:
                     return FileResponse(full_path)
                 else:
                     raise HTTPException(status_code=404, detail="File not found")
+            else:
+                raise HTTPException(status_code=404, detail="File not found")
         else:
             raise HTTPException(status_code=404, detail="File not found")
 
