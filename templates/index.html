@@ -32,10 +32,10 @@
 	<tr>
 		<td  colspan=5>
 		<img src="/static/qr.png" title="Generate QR Code..." width=32px height=32px class="mx-2" role='button' onclick="qr();"  />
+		{% if delitem == 1 %}
 		{% if path %}
 		<img src="/static/downdir.png" title="Download Folder as Zipfile..."  width=32px height=32px class="mx-2" role='button' onclick="if (confirm('Do you want to downloade?')) { window.open('/download_dir/{{ path }}/{{ b }}','_self'); } ;"   />
 		{% endif %}
-		{% if delitem == 1 %}
         <img src="/static/addfolder.png" title="Download Folder as Zipfile..."  width=32px height=32px class="mx-2" role='button' onclick="mkdir();"  />
 		{% endif %}
 		<img src="/static/up3.png" width=32px height=32px class="mx-2" />
