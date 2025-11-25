@@ -178,13 +178,7 @@ async def upload_file(file: List[UploadFile] = File(...)):
 import shutil
 @app.get("/download_dir/{path:path}", response_class=HTMLResponse)
 async def dir_zip(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    path=path.rstrip('/')
-    full_path = os.path.join(abs_path, path)
-    split_path=path.split('/')
-    premission = True
-    for sp in split_path:
-        if sp[0]=='.':
-            premission = False
+    full_path = os.path.join(abs_path, path)   
     delitem = 0
     if credentials.username == 'epfa' and credentials.password == password :
         delitem=1
@@ -192,20 +186,11 @@ async def dir_zip(path: str, request: Request, credentials: Annotated[HTTPBasicC
         if os.path.exists(full_path):
             if delitem==1 :
                 shutil.make_archive('download', 'zip', full_path)
-                return FileResponse('download.zip')
-            elif delitem==0:
-                if premission == True:
-                    shutil.make_archive('download', 'zip', full_path)
-                    return FileResponse('download.zip')
-                else:
-                    raise HTTPException(status_code=404, detail="File not found")
+                return FileResponse('download.zip')            
             else:
                 raise HTTPException(status_code=404, detail="File not found")
         else:
             raise HTTPException(status_code=404, detail="File not found")
-
-
-
 
 @app.get("/{path:path}", response_class=HTMLResponse)
 async def dir_listing(path: str, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
