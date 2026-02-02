@@ -6,7 +6,19 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import os
 from typing import List, Annotated
 import qrcode
+'''
+import socket, fcntl, struct
 
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+print(f" * Running on http://{get_ip_address(b'wlan0')}:8000")
+'''
 root_path = os.getcwd()
 abs_path =  os.path.join(root_path,'all_file')
 upload_path = os.path.join(root_path,'all_file')
